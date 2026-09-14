@@ -1,0 +1,406 @@
+---
+import { getEntry } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import DekoFlaeche from '../components/DekoFlaeche.astro';
+import GalerieRaster from '../components/GalerieRaster.astro';
+import Produktbild from '../components/Produktbild.astro';
+import WerkKarte from '../components/WerkKarte.astro';
+import Wellentrenner from '../components/Wellentrenner.astro';
+import { einstellungen } from '../lib/einstellungen';
+import { preis } from '../lib/format';
+import { alleProdukte, ladeSammlung, produktUrl, sammlungen, type Produkt, type Sammlung } from '../lib/produkte';
+import { url } from '../lib/url';
+
+const schluessel = (p: Produkt) => `${p.collection}/${p.id}`;
+
+const neueste = (await alleProdukte()).sort((a, b) => b.data.datum.getTime() - a.data.datum.getTime());
+const hervorgehoben = neueste.filter((p) => p.data.hervorheben && p.data.status === 'verfuegbar');
+const heroWerk = hervorgehoben[0] ?? neueste[0];
+
+// „Neu aus der Werkstatt“: hervorgehobene zuerst, dann die neuesten – ohne das große Werk oben
+const neu = [...hervorgehoben, ...neueste]
+  .filter((p, index, liste) => liste.findIndex((q) => schluessel(q) === schluessel(p)) === index)
+  .filter((p) => !heroWerk || schluessel(p) !== schluessel(heroWerk))
+  .slice(0, 6);
+
+const kategorien = await Promise.all(
+  (['aquarelle', 'ohrringe'] as Sammlung[]).map(async (sammlung) => {
+    const liste = await ladeSammlung(sammlung);
+    return {
+      sammlung,
+      ...sammlungen[sammlung],
+      titelwerk: liste.find((p) => !heroWerk || schluessel(p) !== schluessel(heroWerk)) ?? liste[0],
+      verfuegbar: liste.filter((p) => p.data.status === 'verfuegbar').length,
+    };
+  }),
+);
+
+const ueberMich = await getEntry('seiten', 'ueber-mich');
+const ueberMichAuszug = ueberMich?.body?.trim().split(/\n\s*\n/)[0];
+
+const schritte = [
+  {
+    titel: 'Eine Idee',
+    text: 'Meist beginnt es mit einem Spaziergang, einer Farbe, die mir nicht aus dem Kopf geht, oder einer kleinen Skizze im Notizbuch.',
+  },
+  {
+    titel: 'Schicht für Schicht, Perle für Perle',
+    text: 'Aquarelle male ich in vielen dünnen Lasuren. Für ein Paar Ohrringe fädle ich oft mehrere Hundert Miyuki-Perlen – das dauert gern einen ganzen Abend.',
+  },
+  {
+    titel: 'Liebevoll verpackt',
+    text: 'Jedes Stück schaue ich mir noch einmal genau an, verpacke es gut geschützt und bringe es selbst zur Post.',
+  },
+];
+---
+
+<BaseLayout
+  titel="Cremer-Laden"
+  beschreibung="Handgemalte Aquarelle und Ohrringe aus Miyuki-Perlen – liebevoll von Hand gemacht in einer kleinen Hobby-Werkstatt. Fast alles Einzelstücke."
+>
+  <!-- Begrüßung -->
+  <section class="abschnitt hero">
+    <DekoFlaeche variante="himmel" seite="links" hoehe="34rem" breite="min(720px, 110vw)" />
+    <div class="container hero__innen">
+      <div class="hero__text">
+        <p class="kapitaelchen">Aquarelle &amp; Perlenohrringe · von Hand gemacht</p>
+        <h1>Hej! Schön, dass du vorbeischaust.</h1>
+        <p class="hero__einleitung">
+          Ich bin {einstellungen.name} und male und fädle in meiner freien Zeit – am Küchentisch, mit viel Tee und noch
+          mehr Geduld. Hier findest du, was dabei entsteht: Aquarelle und Ohrringe aus winzigen Miyuki-Perlen, fast alles
+          Einzelstücke.
+        </p>
+        <div class="hero__knoepfe">
+          <a class="button" href={url('aquarelle')}>Aquarelle ansehen</a>
+          <a class="button button--sekundaer" href={url('ohrringe')}>Ohrringe ansehen</a>
+        </div>
+      </div>
+
+      {
+        heroWerk && (
+          <figure class="hero__werk">
+            <a href={produktUrl(heroWerk)} class="hero__werk-link">
+              <Produktbild
+                bild={heroWerk.data.bilder[0].bild}
+                alt={heroWerk.data.bilder[0].alt}
+                fokus={heroWerk.data.bilder[0].bildfokus}
+                laden="eager"
+                sizes="(min-width: 900px) 440px, 88vw"
+              />
+            </a>
+            <figcaption class="hero__unterschrift">
+              <span>{heroWerk.data.titel}</span>
+              <span class="kapitaelchen">{preis(heroWerk.data.preis)}</span>
+            </figcaption>
+          </figure>
+        )
+      }
+    </div>
+  </section>
+
+  <!-- Die zwei Bereiche -->
+  <section class="abschnitt kategorien" aria-labelledby="kategorien-titel">
+    <div class="container">
+      <div class="abschnitt-kopf">
+        <div>
+          <p class="kapitaelchen">Im Laden</p>
+          <h2 id="kategorien-titel">Zwei kleine Leidenschaften</h2>
+        </div>
+      </div>
+      <div class="kategorien__liste">
+        {
+          kategorien.map((kategorie) => (
+            <a class="kachel" href={url(kategorie.sammlung)}>
+              {kategorie.titelwerk && (
+                <Produktbild
+                  bild={kategorie.titelwerk.data.bilder[0].bild}
+                  alt=""
+                  fokus={kategorie.titelwerk.data.bilder[0].bildfokus}
+                  sizes="(min-width: 900px) 230px, 40vw"
+                />
+              )}
+              <div class="kachel__text">
+                <p class="kapitaelchen">
+                  {kategorie.verfuegbar} {kategorie.verfuegbar === 1 ? 'Stück' : 'Stücke'} verfügbar
+                </p>
+                <h3>{kategorie.titel}</h3>
+                <p>{kategorie.einleitung}</p>
+                <span class="link-pfeil">Zur Galerie</span>
+              </div>
+            </a>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- Neu aus der Werkstatt -->
+  {
+    neu.length > 0 && (
+      <section class="abschnitt neu" aria-labelledby="neu-titel">
+        <DekoFlaeche variante="wiese" seite="rechts" hoehe="15rem" breite="min(520px, 90vw)" />
+        <div class="container">
+          <div class="abschnitt-kopf">
+            <div>
+              <p class="kapitaelchen">Frisch vom Arbeitstisch</p>
+              <h2 id="neu-titel">Neu aus der Werkstatt</h2>
+            </div>
+          </div>
+          <GalerieRaster>
+            {neu.map((produkt) => (
+              <WerkKarte produkt={produkt} />
+            ))}
+          </GalerieRaster>
+        </div>
+      </section>
+    )
+  }
+
+  <!-- So entsteht ein Stück -->
+  <Wellentrenner farbe="var(--farbe-band)" />
+  <section class="band" aria-labelledby="entstehung-titel">
+    <div class="container">
+      <div class="abschnitt-kopf">
+        <div>
+          <p class="kapitaelchen">Kein Fließband, sondern ein Küchentisch</p>
+          <h2 id="entstehung-titel">So entsteht ein Stück</h2>
+        </div>
+      </div>
+      <ol class="schritte">
+        {
+          schritte.map((schritt, index) => (
+            <li class="schritt">
+              <span class="schritt__nummer" aria-hidden="true">
+                {index + 1}
+              </span>
+              <h3>{schritt.titel}</h3>
+              <p>{schritt.text}</p>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </section>
+  <Wellentrenner farbe="var(--farbe-band)" gespiegelt />
+
+  <!-- Über mich -->
+  {
+    ueberMich && (
+      <section class="abschnitt teaser" aria-labelledby="teaser-titel">
+        <div class="container teaser__innen">
+          <div class="teaser__text">
+            <p class="kapitaelchen">Über mich</p>
+            <h2 id="teaser-titel">{ueberMich.data.einleitung ?? ueberMich.data.titel}</h2>
+            {ueberMichAuszug && <p>{ueberMichAuszug}</p>}
+            <a class="link-pfeil" href={url('ueber-mich')}>
+              Mehr über mich und die Werkstatt
+            </a>
+          </div>
+          {ueberMich.data.portraet && (
+            <Produktbild
+              bild={ueberMich.data.portraet.bild}
+              alt={ueberMich.data.portraet.alt}
+              sizes="(min-width: 900px) 380px, 80vw"
+              class="teaser__bild"
+            />
+          )}
+        </div>
+      </section>
+    )
+  }
+</BaseLayout>
+
+<style>
+  /* Begrüßung */
+  .hero {
+    padding-top: clamp(2.5rem, 1.5rem + 4vw, 5.5rem);
+  }
+
+  .hero__innen {
+    display: grid;
+    gap: clamp(2.5rem, 1.5rem + 4vw, 5rem);
+    align-items: center;
+  }
+
+  @media (min-width: 900px) {
+    .hero__innen {
+      grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+    }
+  }
+
+  .hero__text h1 {
+    margin: 0.6rem 0 1.1rem;
+  }
+
+  .hero__einleitung {
+    max-width: 38rem;
+    color: var(--farbe-tinte-sanft);
+    font-size: clamp(1.08rem, 1rem + 0.35vw, 1.22rem);
+  }
+
+  .hero__knoepfe {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 1.75rem;
+  }
+
+  .hero__werk {
+    width: 100%;
+    max-width: 27.5rem;
+    margin: 0 auto;
+  }
+
+  @media (min-width: 900px) {
+    .hero__werk {
+      margin-right: 0;
+    }
+  }
+
+  .hero__werk-link :global(.produktbild) {
+    transition:
+      transform var(--dauer) var(--kurve),
+      box-shadow var(--dauer) var(--kurve);
+  }
+
+  .hero__werk-link:hover :global(.produktbild) {
+    transform: translateY(-3px);
+    box-shadow: var(--schatten-bild-hover);
+  }
+
+  .hero__unterschrift {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-top: 0.9rem;
+    font-family: var(--schrift-titel);
+    font-size: 1.05rem;
+  }
+
+  /* Kategorien */
+  .kategorien {
+    padding-top: 0;
+  }
+
+  .kategorien__liste {
+    display: grid;
+    gap: clamp(1.75rem, 1rem + 2.5vw, 3rem);
+  }
+
+  @media (min-width: 900px) {
+    .kategorien__liste {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  .kachel {
+    display: grid;
+    grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+    gap: clamp(1rem, 0.5rem + 2vw, 2rem);
+    align-items: center;
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .kachel :global(.produktbild) {
+    transition:
+      transform var(--dauer) var(--kurve),
+      box-shadow var(--dauer) var(--kurve);
+  }
+
+  .kachel:hover :global(.produktbild) {
+    transform: translateY(-3px);
+    box-shadow: var(--schatten-bild-hover);
+  }
+
+  .kachel:hover {
+    color: inherit;
+  }
+
+  .kachel__text h3 {
+    margin: 0.3rem 0 0.5rem;
+    font-size: clamp(1.5rem, 1.2rem + 1vw, 2rem);
+  }
+
+  .kachel__text p:not(.kapitaelchen) {
+    color: var(--farbe-tinte-sanft);
+  }
+
+  .kachel:hover .link-pfeil {
+    color: var(--farbe-rot);
+  }
+
+  /* Schritte */
+  .band {
+    background: var(--farbe-band);
+    padding-block: clamp(2.5rem, 1.5rem + 4vw, 5rem);
+  }
+
+  .schritte {
+    display: grid;
+    gap: clamp(1.75rem, 1rem + 2vw, 3rem);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  @media (min-width: 760px) {
+    .schritte {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  .schritt__nummer {
+    display: grid;
+    place-items: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    margin-bottom: 1rem;
+    border-radius: 50%;
+    background: var(--farbe-flaeche);
+    box-shadow: var(--schatten-bild);
+    font-family: var(--schrift-titel);
+    font-size: 1.3rem;
+  }
+
+  .schritt h3 {
+    margin-bottom: 0.4rem;
+  }
+
+  .schritt p {
+    margin: 0;
+    color: var(--farbe-tinte-sanft);
+  }
+
+  /* Über mich */
+  .teaser__innen {
+    display: grid;
+    gap: clamp(2rem, 1rem + 3vw, 4rem);
+    align-items: center;
+  }
+
+  @media (min-width: 900px) {
+    .teaser__innen {
+      grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+    }
+
+    .teaser__text {
+      order: 2;
+    }
+  }
+
+  .teaser__innen :global(.teaser__bild) {
+    width: 100%;
+    max-width: 24rem;
+    margin-inline: auto;
+  }
+
+  .teaser__text h2 {
+    margin: 0.4rem 0 1rem;
+  }
+
+  .teaser__text p:not(.kapitaelchen) {
+    max-width: 40rem;
+    color: var(--farbe-tinte-sanft);
+  }
+</style>

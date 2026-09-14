@@ -1,0 +1,85 @@
+---
+/** Gemeinsame Galerie-Seite für Aquarelle und Ohrringe. */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import DekoFlaeche from './DekoFlaeche.astro';
+import Filter from './Filter.astro';
+import GalerieRaster from './GalerieRaster.astro';
+import Kritzelei from './Kritzelei.astro';
+import WerkKarte from './WerkKarte.astro';
+import { ladeSammlung, merkmale, sammlungen, type Sammlung } from '../lib/produkte';
+
+interface Props {
+  sammlung: Sammlung;
+  deko: 'himmel' | 'wiese' | 'rose';
+}
+
+const { sammlung, deko } = Astro.props;
+const info = sammlungen[sammlung];
+const werke = await ladeSammlung(sammlung);
+const alleMerkmale = [...new Set(werke.flatMap(merkmale))].sort((a, b) => a.localeCompare(b, 'de'));
+const verfuegbar = werke.filter((werk) => werk.data.status === 'verfuegbar').length;
+---
+
+<BaseLayout titel={info.titel} beschreibung={info.einleitung}>
+  <section class="abschnitt katalog">
+    <DekoFlaeche variante={deko} seite="rechts" hoehe="18rem" />
+    <div class="container">
+      <header class="katalog__kopf">
+        <p class="kapitaelchen">Galerie · {verfuegbar} von {werke.length} verfügbar</p>
+        <h1>{info.titel}</h1>
+        <p class="katalog__einleitung">{info.einleitung}</p>
+      </header>
+
+      {
+        werke.length > 0 ? (
+          <>
+            <Filter merkmale={alleMerkmale} merkmalName={info.merkmal} />
+            <GalerieRaster>
+              {werke.map((werk, index) => (
+                <WerkKarte produkt={werk} ebene="h2" laden={index < 3 ? 'eager' : 'lazy'} ueberblenden />
+              ))}
+            </GalerieRaster>
+          </>
+        ) : (
+          <div class="katalog__leer">
+            <Kritzelei art="pinsel" class="katalog__kritzelei" />
+            <p>Gerade entstehen neue Stücke – schau bald wieder vorbei!</p>
+          </div>
+        )
+      }
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .katalog {
+    padding-top: clamp(2.5rem, 1.5rem + 4vw, 5rem);
+  }
+
+  .katalog__kopf {
+    max-width: 44rem;
+    margin-bottom: clamp(1.75rem, 1rem + 2vw, 2.75rem);
+  }
+
+  .katalog__kopf h1 {
+    margin: 0.4rem 0 0.75rem;
+  }
+
+  .katalog__einleitung {
+    margin: 0;
+    color: var(--farbe-tinte-sanft);
+    font-size: 1.12rem;
+  }
+
+  .katalog__leer {
+    display: grid;
+    justify-items: center;
+    gap: 1rem;
+    padding-block: 4rem;
+    text-align: center;
+  }
+
+  .katalog__leer :global(.katalog__kritzelei) {
+    width: 8rem;
+  }
+</style>

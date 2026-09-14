@@ -1,0 +1,118 @@
+---
+import KaufBox from './KaufBox.astro';
+import StatusPunkt from './StatusPunkt.astro';
+import { preis } from '../lib/format';
+import { sammlungen, type Produkt } from '../lib/produkte';
+import { url } from '../lib/url';
+
+interface Props {
+  produkt: Produkt;
+}
+
+const { produkt } = Astro.props;
+const { titel, status, beispiel } = produkt.data;
+
+const details: [string, string][] =
+  produkt.collection === 'aquarelle'
+    ? [
+        ['Technik', produkt.data.technik],
+        ['Format', produkt.data.format],
+        ['Entstanden', String(produkt.data.jahr)],
+        ['Rahmen', produkt.data.gerahmt ? 'mit Rahmen' : 'ohne Rahmen'],
+        ['Motiv', produkt.data.motive.join(', ')],
+      ]
+    : [
+        ['Perlen', produkt.data.perlen],
+        ['Ohrhaken', produkt.data.haken],
+        ['Länge', produkt.data.laenge],
+        ['Farben', produkt.data.farben.join(', ')],
+        ['Auflage', produkt.data.anzahl > 1 ? `${produkt.data.anzahl} Paar` : 'Einzelstück'],
+      ];
+
+const unikat = produkt.collection === 'aquarelle' || produkt.data.anzahl <= 1;
+---
+
+<div class="werkschild">
+  <p class="kapitaelchen">
+    {sammlungen[produkt.collection].einzahl}{beispiel && ' · Beispiel'}
+  </p>
+  <h1 class="werkschild__titel">{titel}</h1>
+
+  <div class="werkschild__preiszeile">
+    <p class="werkschild__preis">{preis(produkt.data.preis)}</p>
+    {status !== 'verfuegbar' && <StatusPunkt status={status} />}
+  </div>
+  <p class="werkschild__steuer">
+    Gemäß § 19 UStG wird keine Umsatzsteuer berechnet, zzgl. <a href={url('kauf-und-versand#versand')}>Versandkosten</a>.
+  </p>
+
+  <KaufBox produkt={produkt} />
+
+  <dl class="werkschild__details">
+    {
+      details
+        .filter(([, wert]) => wert)
+        .map(([name, wert]) => (
+          <div>
+            <dt class="kapitaelchen">{name}</dt>
+            <dd>{wert}</dd>
+          </div>
+        ))
+    }
+  </dl>
+
+  <p class="werkschild__unikat">
+    {unikat ? 'Unikat, von Hand gefertigt.' : 'Von Hand gefertigt, in ganz kleiner Stückzahl.'} Kleine Unregelmäßigkeiten
+    gehören dazu und machen jedes Stück besonders.
+  </p>
+</div>
+
+<style>
+  .werkschild__titel {
+    margin: 0.35rem 0 0.9rem;
+  }
+
+  .werkschild__preiszeile {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem 1rem;
+  }
+
+  .werkschild__preis {
+    margin: 0;
+    font-family: var(--schrift-titel);
+    font-size: 1.75rem;
+  }
+
+  .werkschild__steuer {
+    margin: 0.2rem 0 1.5rem;
+    color: var(--farbe-tinte-sanft);
+    font-size: 0.85rem;
+  }
+
+  .werkschild__details {
+    display: grid;
+    margin: 2rem 0 0;
+    border-top: 1px solid var(--farbe-linie);
+  }
+
+  .werkschild__details div {
+    display: grid;
+    grid-template-columns: 7.5rem 1fr;
+    gap: 1rem;
+    align-items: baseline;
+    padding-block: 0.7rem;
+    border-bottom: 1px solid var(--farbe-linie);
+  }
+
+  .werkschild__details dd {
+    margin: 0;
+  }
+
+  .werkschild__unikat {
+    margin: 1.25rem 0 0;
+    color: var(--farbe-tinte-sanft);
+    font-size: 0.92rem;
+  }
+</style>

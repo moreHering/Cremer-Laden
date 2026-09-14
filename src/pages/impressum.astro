@@ -1,0 +1,38 @@
+---
+import RechtstextLayout from '../layouts/RechtstextLayout.astro';
+import { einstellungen } from '../lib/einstellungen';
+
+const { name, strasse, ort, telefon, email } = einstellungen.impressum;
+---
+
+<RechtstextLayout titel="Impressum" beschreibung="Impressum des Cremer-Ladens.">
+  <h2>Angaben gemäß § 5 DDG</h2>
+  <p>
+    <mark class="platzhalter">{name}</mark><br />
+    Cremer-Laden<br />
+    <mark class="platzhalter">{strasse}</mark><br />
+    <mark class="platzhalter">{ort}</mark>
+  </p>
+
+  <h2>Kontakt</h2>
+  <p>
+    E-Mail: <a href={`mailto:${email}`}>{email}</a>
+    {
+      telefon && (
+        <>
+          <br />
+          Telefon: {telefon}
+        </>
+      )
+    }
+  </p>
+
+  <h2>Umsatzsteuer</h2>
+  <p>Gemäß § 19 UStG wird keine Umsatzsteuer berechnet (Kleinunternehmerregelung).</p>
+
+  <h2>Verbraucherstreitbeilegung</h2>
+  <p>
+    Ich bin nicht bereit und nicht verpflichtet, an Streitbeilegungsverfahren vor einer Verbraucherschlichtungsstelle
+    teilzunehmen.
+  </p>
+</RechtstextLayout>

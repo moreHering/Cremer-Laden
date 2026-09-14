@@ -1,0 +1,148 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { einstellungen } from '../lib/einstellungen';
+import { url } from '../lib/url';
+---
+
+<BaseLayout
+  titel="Kauf & Versand"
+  beschreibung="So kaufst du im Cremer-Laden: sichere Bezahlung über Stripe oder PayPal, liebevoller Versand und Pflegetipps für Aquarelle und Perlenohrringe."
+>
+  <section class="abschnitt">
+    <div class="container info">
+      <header class="info__kopf">
+        <p class="kapitaelchen">Gut zu wissen</p>
+        <h1>Kauf &amp; Versand</h1>
+        <p class="info__einleitung">
+          Hier ist alles ein bisschen kleiner als in großen Shops – dafür packe ich jedes Paket selbst. So läuft ein Kauf
+          ab:
+        </p>
+      </header>
+
+      <ol class="ablauf">
+        <li>
+          <span class="ablauf__nummer" aria-hidden="true">1</span>
+          <h2>Stück aussuchen</h2>
+          <p>Auf der Seite des Aquarells oder der Ohrringe klickst du auf „Kaufen“.</p>
+        </li>
+        <li>
+          <span class="ablauf__nummer" aria-hidden="true">2</span>
+          <h2>Sicher bezahlen</h2>
+          <p>Du wirst zu Stripe oder PayPal weitergeleitet und gibst dort deine Lieferadresse an.</p>
+        </li>
+        <li>
+          <span class="ablauf__nummer" aria-hidden="true">3</span>
+          <h2>Ab die Post</h2>
+          <p>
+            Du bekommst eine Bestätigung per E-Mail. Ich verschicke innerhalb von <mark class="platzhalter"
+              >3–5 Werktagen</mark
+            >.
+          </p>
+        </li>
+      </ol>
+
+      <div class="prosa">
+        <h2 id="bezahlung">Bezahlung</h2>
+        <p>
+          Bezahlt wird über <strong>Stripe</strong> (z. B. Kreditkarte, Apple Pay oder Google Pay) oder über
+          <strong>PayPal</strong> – je nachdem, was beim jeweiligen Stück angegeben ist. Deine Zahlungsdaten gibst du nur
+          beim Zahlungsanbieter ein, ich sehe sie nicht.
+        </p>
+        <p>
+          Gemäß § 19 UStG wird keine Umsatzsteuer berechnet (Kleinunternehmerregelung). Alle Preise sind Endpreise, zzgl.
+          Versand.
+        </p>
+
+        <h2 id="versand">Versand</h2>
+        <p>{einstellungen.versandText}</p>
+        <p>
+          Aquarelle verschicke ich flach zwischen stabiler Pappe, Ohrringe in einem kleinen Schächtelchen. Versand
+          aktuell nur innerhalb Deutschlands – für andere Länder schreib mir gern vorher.
+        </p>
+
+        <h2 id="pflege">Pflege</h2>
+        <h3>Aquarelle</h3>
+        <ul>
+          <li>Nicht in die pralle Sonne hängen – Aquarellfarben können sonst mit der Zeit verblassen.</li>
+          <li>Am besten hinter Glas rahmen und trocken aufbewahren.</li>
+        </ul>
+        <h3>Ohrringe</h3>
+        <ul>
+          <li>Vor Wasser, Parfum und Cremes schützen – also zuletzt anziehen und zuerst ablegen.</li>
+          <li>Flach und trocken aufbewahren, damit die Perlenfäden nicht knicken.</li>
+        </ul>
+
+        <h2 id="wunsch">Anfertigung auf Wunsch</h2>
+        <p>
+          Du wünschst dir Ohrringe in deinen Lieblingsfarben oder ein Aquarell von einem bestimmten Ort? <a
+            href={url('kontakt')}>Schreib mir</a
+          > – wenn es zeitlich passt, mache ich das sehr gern. Bitte beachte: Bei Stücken, die nach deinen Wünschen angefertigt
+          werden, besteht kein Widerrufsrecht.
+        </p>
+
+        <h2 id="widerruf">Widerruf &amp; Rückfragen</h2>
+        <p>
+          Alles zum Widerrufsrecht findest du in der <a href={url('widerruf')}>Widerrufsbelehrung</a>. Wenn etwas nicht
+          stimmt, melde dich einfach – wir finden eine Lösung.
+        </p>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .info__kopf {
+    max-width: 44rem;
+  }
+
+  .info__kopf h1 {
+    margin: 0.4rem 0 0.75rem;
+  }
+
+  .info__einleitung {
+    color: var(--farbe-tinte-sanft);
+    font-size: 1.12rem;
+  }
+
+  .ablauf {
+    display: grid;
+    gap: 1.25rem;
+    margin: 2.5rem 0 3.5rem;
+    padding: 0;
+    list-style: none;
+  }
+
+  @media (min-width: 760px) {
+    .ablauf {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  .ablauf li {
+    padding: 1.5rem;
+    border-radius: var(--radius-bild);
+    background: var(--farbe-flaeche);
+    box-shadow: var(--schatten-bild);
+  }
+
+  .ablauf h2 {
+    margin: 0.75rem 0 0.35rem;
+    font-size: 1.25rem;
+  }
+
+  .ablauf p {
+    margin: 0;
+    color: var(--farbe-tinte-sanft);
+  }
+
+  .ablauf__nummer {
+    display: grid;
+    place-items: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 50%;
+    background: var(--farbe-band);
+    font-family: var(--schrift-titel);
+    font-size: 1.1rem;
+  }
+</style>

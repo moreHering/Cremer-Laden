@@ -1,0 +1,108 @@
+---
+import Produktbild from './Produktbild.astro';
+import StatusPunkt from './StatusPunkt.astro';
+import { preis } from '../lib/format';
+import { merkmale, metaZeile, produktUrl, transitionName, type Produkt } from '../lib/produkte';
+
+interface Props {
+  produkt: Produkt;
+  laden?: 'lazy' | 'eager';
+  /** Bild-Überblendung zur Detailseite – nur setzen, wenn das Werk nur einmal auf der Seite vorkommt. */
+  ueberblenden?: boolean;
+  ebene?: 'h2' | 'h3';
+}
+
+const { produkt, laden = 'lazy', ueberblenden = false, ebene = 'h3' } = Astro.props;
+const { titel, bilder, status } = produkt.data;
+const [titelbild] = bilder;
+const Ueberschrift = ebene;
+---
+
+<article class="werk" data-werk data-status={status} data-merkmale={merkmale(produkt).join('|')}>
+  <Produktbild
+    bild={titelbild.bild}
+    alt={titelbild.alt}
+    fokus={titelbild.bildfokus}
+    laden={laden}
+    transitionName={ueberblenden ? transitionName(produkt) : undefined}
+  />
+  <div class="werk__schild">
+    <Ueberschrift class="werk__titel">
+      <a href={produktUrl(produkt)} class="werk__link">{titel}</a>
+    </Ueberschrift>
+    <p class="werk__meta kapitaelchen">{metaZeile(produkt)}</p>
+    <p class="werk__preis">
+      <span class="werk__betrag">{preis(produkt.data.preis)}</span>
+      {status !== 'verfuegbar' && <StatusPunkt status={status} />}
+    </p>
+  </div>
+</article>
+
+<style>
+  .werk {
+    position: relative;
+  }
+
+  .werk :global(.produktbild) {
+    transition:
+      transform var(--dauer) var(--kurve),
+      box-shadow var(--dauer) var(--kurve);
+  }
+
+  .werk:hover :global(.produktbild) {
+    transform: translateY(-3px);
+    box-shadow: var(--schatten-bild-hover);
+  }
+
+  .werk:has(.werk__link:focus-visible) :global(.produktbild) {
+    outline: 2.5px solid var(--farbe-rot);
+    outline-offset: 4px;
+  }
+
+  .werk__schild {
+    padding-top: 1rem;
+  }
+
+  .werk__titel {
+    margin: 0 0 0.25rem;
+    font-size: 1.22rem;
+  }
+
+  .werk__link {
+    text-decoration: none;
+  }
+
+  /* Die ganze Karte ist klickbar */
+  .werk__link::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: var(--radius-bild);
+  }
+
+  .werk__link:focus-visible {
+    outline: none;
+  }
+
+  .werk:hover .werk__link {
+    color: var(--farbe-rot);
+  }
+
+  .werk__meta {
+    margin: 0 0 0.4rem;
+  }
+
+  .werk__preis {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.35rem 0.9rem;
+    margin: 0;
+    font-weight: 650;
+  }
+
+  .werk[data-status='verkauft'] .werk__betrag {
+    color: var(--farbe-tinte-sanft);
+    font-weight: 500;
+  }
+</style>

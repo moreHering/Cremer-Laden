@@ -1,0 +1,43 @@
+---
+/** Status wie in der Galerie: roter Punkt = verkauft, gelber Punkt = reserviert. */
+import { statusText, type Status } from '../lib/format';
+
+interface Props {
+  status: Status;
+}
+
+const { status } = Astro.props;
+---
+
+<span class="punkt" data-status={status}>
+  <span class="punkt__kreis" aria-hidden="true"></span>
+  {statusText[status]}
+</span>
+
+<style>
+  .punkt {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45em;
+    font-size: 0.8rem;
+    font-weight: 650;
+    letter-spacing: 0.04em;
+    color: var(--farbe-tinte-sanft);
+    white-space: nowrap;
+  }
+
+  .punkt__kreis {
+    width: 0.72em;
+    height: 0.72em;
+    border-radius: 50%;
+    background: var(--farbe-punkt-verfuegbar);
+  }
+
+  .punkt[data-status='reserviert'] .punkt__kreis {
+    background: var(--farbe-punkt-reserviert);
+  }
+
+  .punkt[data-status='verkauft'] .punkt__kreis {
+    background: var(--farbe-punkt-verkauft);
+  }
+</style>

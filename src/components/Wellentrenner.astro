@@ -1,0 +1,39 @@
+---
+/** Weiche Welle als Übergang zwischen zwei Abschnitten. */
+interface Props {
+  farbe: string;
+  gespiegelt?: boolean;
+  class?: string;
+}
+
+const { farbe, gespiegelt = false, class: klasse } = Astro.props;
+---
+
+<div class:list={['welle', { 'welle--gespiegelt': gespiegelt }, klasse]} aria-hidden="true">
+  <svg viewBox="0 0 1440 60" preserveAspectRatio="none" focusable="false">
+    <path
+      d="M0 36C160 12 330 6 520 26s380 34 560 16 260-30 360-18V60H0Z"
+      style={`fill: ${farbe}`}
+    ></path>
+  </svg>
+</div>
+
+<style>
+  .welle {
+    position: relative;
+    line-height: 0;
+    margin-bottom: -1px;
+    pointer-events: none;
+  }
+
+  .welle svg {
+    width: 100%;
+    height: clamp(22px, 3.4vw, 50px);
+  }
+
+  .welle--gespiegelt {
+    margin-top: -1px;
+    margin-bottom: 0;
+    transform: scale(-1, -1);
+  }
+</style>

@@ -1,0 +1,63 @@
+---
+import RechtstextLayout from '../layouts/RechtstextLayout.astro';
+import { einstellungen } from '../lib/einstellungen';
+import { url } from '../lib/url';
+
+const { name, strasse, ort } = einstellungen.impressum;
+---
+
+<RechtstextLayout titel="Allgemeine Geschäftsbedingungen" beschreibung="Allgemeine Geschäftsbedingungen des Cremer-Ladens.">
+  <h2>§ 1 Geltungsbereich</h2>
+  <p>
+    Diese AGB gelten für alle Verträge über den Kauf von Waren über die Website des Cremer-Ladens zwischen mir und dir
+    als Verbraucherin oder Verbraucher.
+  </p>
+
+  <h2>§ 2 Vertragspartnerin</h2>
+  <p>
+    Der Kaufvertrag kommt zustande mit <mark class="platzhalter">{name}</mark>, <mark class="platzhalter"
+      >{strasse}</mark
+    >, <mark class="platzhalter">{ort}</mark>.
+  </p>
+
+  <h2>§ 3 Vertragsschluss</h2>
+  <p>
+    Die Darstellung der Stücke auf der Website ist kein rechtlich bindendes Angebot. Mit dem Klick auf „Kaufen“ wirst du
+    zum Zahlungsanbieter weitergeleitet. <mark class="platzhalter"
+      >Genauen Ablauf von Angebot, Bestellbutton und Annahme (z. B. Bestätigungs-E-Mail) passend zur Einstellung des
+      Zahlungslinks beschreiben.</mark
+    >
+  </p>
+
+  <h2>§ 4 Preise und Versandkosten</h2>
+  <p>
+    Alle Preise sind Endpreise. Gemäß § 19 UStG wird keine Umsatzsteuer berechnet. Zusätzlich fallen die unter <a
+      href={url('kauf-und-versand#versand')}>Kauf &amp; Versand</a
+    > genannten Versandkosten an.
+  </p>
+
+  <h2>§ 5 Zahlung</h2>
+  <p>Die Zahlung erfolgt über Stripe oder PayPal, wie beim jeweiligen Stück angegeben.</p>
+
+  <h2>§ 6 Lieferung</h2>
+  <p>
+    Ich liefere innerhalb Deutschlands. Die Lieferzeit beträgt <mark class="platzhalter">3–5 Werktage</mark> nach
+    Zahlungseingang.
+  </p>
+
+  <h2>§ 7 Eigentumsvorbehalt</h2>
+  <p>Die Ware bleibt bis zur vollständigen Bezahlung mein Eigentum.</p>
+
+  <h2>§ 8 Widerrufsrecht</h2>
+  <p>Als Verbraucherin oder Verbraucher hast du ein Widerrufsrecht. Einzelheiten stehen in der <a href={url('widerruf')}>Widerrufsbelehrung</a>.</p>
+
+  <h2>§ 9 Gewährleistung</h2>
+  <p>
+    Es gilt das gesetzliche Mängelhaftungsrecht. <mark class="platzhalter"
+      >Hinweis zu handgefertigten Unikaten (natürliche Abweichungen in Farbe und Form) rechtssicher formulieren.</mark
+    >
+  </p>
+
+  <h2>§ 10 Schlussbestimmungen</h2>
+  <p>Es gilt das Recht der Bundesrepublik Deutschland unter Ausschluss des UN-Kaufrechts, soweit zwingende Verbraucherschutzvorschriften dem nicht entgegenstehen.</p>
+</RechtstextLayout>

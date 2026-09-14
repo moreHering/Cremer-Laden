@@ -1,0 +1,313 @@
+# ------------------------------------------------------------------
+# Admin-Oberfläche des Cremer-Ladens (Sveltia CMS)
+# Aufruf: https://morehering.github.io/Cremer-Laden/admin/
+#
+# Für Entwickler: Die Feldnamen hier müssen zu src/content.config.ts
+# passen. Änderungen bitte immer an beiden Stellen vornehmen!
+# ------------------------------------------------------------------
+
+backend:
+  name: github
+  repo: moreHering/Cremer-Laden
+  branch: main
+  commit_messages:
+    create: 'Neu: {{collection}} „{{slug}}“'
+    update: 'Bearbeitet: {{collection}} „{{slug}}“'
+    delete: 'Gelöscht: {{collection}} „{{slug}}“'
+    uploadMedia: 'Foto hochgeladen: {{path}}'
+    deleteMedia: 'Foto gelöscht: {{path}}'
+
+site_url: https://morehering.github.io/Cremer-Laden/
+display_url: https://morehering.github.io/Cremer-Laden/
+
+# Handyfotos beim Hochladen automatisch verkleinern und in WebP umwandeln
+media_libraries:
+  all:
+    transformations:
+      raster_image:
+        format: webp
+        quality: 85
+        width: 2048
+        height: 2048
+
+collections:
+  # ---------------------------------------------------------------
+  # Aquarelle
+  # ---------------------------------------------------------------
+  - name: aquarelle
+    label: Aquarelle
+    label_singular: Aquarell
+    description: Deine gemalten Bilder. Jedes Bild bekommt einen eigenen Ordner – die Fotos landen direkt daneben.
+    folder: /src/content/aquarelle
+    path: '{{slug}}/index'
+    media_folder: ''
+    public_folder: ''
+    extension: md
+    format: yaml-frontmatter
+    create: true
+    identifier_field: titel
+    summary: '{{titel}} – {{preis}} € ({{status}})'
+    sortable_fields: [datum, titel, preis]
+    view_filters:
+      - { label: Verfügbar, field: status, pattern: verfuegbar }
+      - { label: Reserviert, field: status, pattern: reserviert }
+      - { label: Verkauft, field: status, pattern: verkauft }
+    fields:
+      - { label: Titel, name: titel, widget: string }
+      - label: Preis in €
+        name: preis
+        widget: number
+        value_type: float
+        min: 0
+        step: 0.5
+      - label: Status
+        name: status
+        widget: select
+        default: verfuegbar
+        options:
+          - { label: verfügbar, value: verfuegbar }
+          - { label: reserviert, value: reserviert }
+          - { label: verkauft, value: verkauft }
+      - label: Fotos
+        name: bilder
+        widget: list
+        min: 1
+        summary: '{{fields.alt}}'
+        hint: Das erste Foto ist das Titelbild. Am schönsten wirken Fotos im Hochformat 4:5 bei Tageslicht vor hellem Hintergrund.
+        fields:
+          - { label: Foto, name: bild, widget: image, choose_url: false }
+          - label: Bildbeschreibung
+            name: alt
+            widget: string
+            hint: Beschreibe kurz, was zu sehen ist – wichtig für Menschen, die nicht sehen können, und für Suchmaschinen.
+          - label: Bildausschnitt
+            name: bildfokus
+            widget: select
+            default: mitte
+            hint: Welcher Teil soll in der Galerie sichtbar bleiben, wenn das Foto nicht ins Hochformat passt? Bei Querformaten „Links“ oder „Rechts“ wählen.
+            options:
+              - { label: Mitte, value: mitte }
+              - { label: Oben, value: oben }
+              - { label: Unten, value: unten }
+              - { label: Links, value: links }
+              - { label: Rechts, value: rechts }
+      - { label: Technik, name: technik, widget: string, default: Aquarell auf Papier }
+      - { label: Format, name: format, widget: string, hint: 'z. B. 24 × 30 cm' }
+      - { label: Entstehungsjahr, name: jahr, widget: number, value_type: int, default: 2026 }
+      - { label: Mit Rahmen, name: gerahmt, widget: boolean, default: false }
+      - label: Motive
+        name: motive
+        widget: list
+        required: false
+        hint: 'z. B. Blumen, Landschaft, Meer – wird für den Filter in der Galerie genutzt.'
+      - label: Kauf-Link
+        name: kaufLink
+        widget: string
+        required: false
+        pattern: ['^https://', 'Bitte den vollständigen Link mit https:// einfügen.']
+        hint: Den Zahlungslink von Stripe oder PayPal hier einfügen. Leer lassen, dann erscheint stattdessen „Per E-Mail anfragen“.
+      - label: Zahlungsanbieter
+        name: kaufAnbieter
+        widget: select
+        default: stripe
+        options:
+          - { label: Stripe, value: stripe }
+          - { label: PayPal, value: paypal }
+      - label: Datum
+        name: datum
+        widget: datetime
+        time_format: false
+        date_format: DD.MM.YYYY
+        format: YYYY-MM-DD
+        default: '{{now}}'
+      - label: Auf der Startseite hervorheben
+        name: hervorheben
+        widget: boolean
+        default: false
+        required: false
+      - label: Beispiel-Eintrag
+        name: beispiel
+        widget: boolean
+        default: false
+        required: false
+        hint: Nur für die mitgelieferten Beispiele. Bei eigenen Werken ausgeschaltet lassen.
+      - { label: Beschreibung, name: body, widget: markdown, required: false }
+
+  # ---------------------------------------------------------------
+  # Ohrringe
+  # ---------------------------------------------------------------
+  - name: ohrringe
+    label: Ohrringe
+    label_singular: Ohrringe
+    description: Deine Perlenohrringe. Jedes Paar bekommt einen eigenen Ordner – die Fotos landen direkt daneben.
+    folder: /src/content/ohrringe
+    path: '{{slug}}/index'
+    media_folder: ''
+    public_folder: ''
+    extension: md
+    format: yaml-frontmatter
+    create: true
+    identifier_field: titel
+    summary: '{{titel}} – {{preis}} € ({{status}})'
+    sortable_fields: [datum, titel, preis]
+    view_filters:
+      - { label: Verfügbar, field: status, pattern: verfuegbar }
+      - { label: Reserviert, field: status, pattern: reserviert }
+      - { label: Verkauft, field: status, pattern: verkauft }
+    fields:
+      - { label: Titel, name: titel, widget: string }
+      - label: Preis in €
+        name: preis
+        widget: number
+        value_type: float
+        min: 0
+        step: 0.5
+      - label: Status
+        name: status
+        widget: select
+        default: verfuegbar
+        options:
+          - { label: verfügbar, value: verfuegbar }
+          - { label: reserviert, value: reserviert }
+          - { label: verkauft, value: verkauft }
+      - label: Fotos
+        name: bilder
+        widget: list
+        min: 1
+        summary: '{{fields.alt}}'
+        hint: Das erste Foto ist das Titelbild. Am schönsten wirken Fotos im Hochformat 4:5 bei Tageslicht vor hellem Hintergrund.
+        fields:
+          - { label: Foto, name: bild, widget: image, choose_url: false }
+          - label: Bildbeschreibung
+            name: alt
+            widget: string
+            hint: Beschreibe kurz, was zu sehen ist – wichtig für Menschen, die nicht sehen können, und für Suchmaschinen.
+          - label: Bildausschnitt
+            name: bildfokus
+            widget: select
+            default: mitte
+            hint: Welcher Teil soll in der Galerie sichtbar bleiben, wenn das Foto nicht ins Hochformat passt?
+            options:
+              - { label: Mitte, value: mitte }
+              - { label: Oben, value: oben }
+              - { label: Unten, value: unten }
+              - { label: Links, value: links }
+              - { label: Rechts, value: rechts }
+      - { label: Perlen, name: perlen, widget: string, default: Miyuki Delica 11/0 }
+      - { label: Ohrhaken, name: haken, widget: string, hint: 'z. B. Edelstahl oder Silber 925' }
+      - { label: Länge, name: laenge, widget: string, hint: 'z. B. 5 cm' }
+      - label: Farben
+        name: farben
+        widget: list
+        required: false
+        hint: 'z. B. Rosa, Blau, Bunt – wird für den Filter in der Galerie genutzt.'
+      - label: Anzahl Paare
+        name: anzahl
+        widget: number
+        value_type: int
+        min: 0
+        default: 1
+        hint: '1 = Einzelstück. Bei mehreren gleichen Paaren die Anzahl eintragen.'
+      - label: Kauf-Link
+        name: kaufLink
+        widget: string
+        required: false
+        pattern: ['^https://', 'Bitte den vollständigen Link mit https:// einfügen.']
+        hint: Den Zahlungslink von Stripe oder PayPal hier einfügen. Leer lassen, dann erscheint stattdessen „Per E-Mail anfragen“.
+      - label: Zahlungsanbieter
+        name: kaufAnbieter
+        widget: select
+        default: stripe
+        options:
+          - { label: Stripe, value: stripe }
+          - { label: PayPal, value: paypal }
+      - label: Datum
+        name: datum
+        widget: datetime
+        time_format: false
+        date_format: DD.MM.YYYY
+        format: YYYY-MM-DD
+        default: '{{now}}'
+      - label: Auf der Startseite hervorheben
+        name: hervorheben
+        widget: boolean
+        default: false
+        required: false
+      - label: Beispiel-Eintrag
+        name: beispiel
+        widget: boolean
+        default: false
+        required: false
+        hint: Nur für die mitgelieferten Beispiele. Bei eigenen Stücken ausgeschaltet lassen.
+      - { label: Beschreibung, name: body, widget: markdown, required: false }
+
+  # ---------------------------------------------------------------
+  # Seiten (nur bearbeiten, nicht neu anlegen)
+  # ---------------------------------------------------------------
+  - name: seiten
+    label: Seiten
+    label_singular: Seite
+    folder: /src/content/seiten
+    path: '{{slug}}/index'
+    media_folder: ''
+    public_folder: ''
+    extension: md
+    format: yaml-frontmatter
+    create: false
+    delete: false
+    identifier_field: titel
+    fields:
+      - { label: Seitentitel, name: titel, widget: string }
+      - { label: Große Überschrift, name: einleitung, widget: string, required: false }
+      - label: Porträt
+        name: portraet
+        widget: object
+        required: false
+        fields:
+          - { label: Foto, name: bild, widget: image, choose_url: false }
+          - { label: Bildbeschreibung, name: alt, widget: string }
+      - label: Werkstatt-Fotos
+        name: werkstattBilder
+        widget: list
+        required: false
+        summary: '{{fields.alt}}'
+        fields:
+          - { label: Foto, name: bild, widget: image, choose_url: false }
+          - { label: Bildbeschreibung, name: alt, widget: string }
+      - { label: Text, name: body, widget: markdown }
+
+  # ---------------------------------------------------------------
+  # Einstellungen
+  # ---------------------------------------------------------------
+  - name: einstellungen
+    label: Einstellungen
+    format: json
+    files:
+      - name: allgemein
+        label: Allgemeine Angaben
+        file: /src/data/einstellungen.json
+        fields:
+          - { label: Dein Vorname, name: name, widget: string, hint: 'Erscheint in der Begrüßung auf der Startseite.' }
+          - { label: E-Mail-Adresse, name: email, widget: string }
+          - label: Instagram-Profil
+            name: instagram
+            widget: string
+            required: false
+            hint: 'Vollständiger Link, z. B. https://www.instagram.com/deinname/'
+          - { label: Versandinfo, name: versandText, widget: text }
+          - label: Pause-Hinweis
+            name: pause
+            widget: object
+            hint: Zeigt oben auf allen Seiten einen kleinen Hinweis, z. B. im Urlaub.
+            fields:
+              - { label: Hinweis anzeigen, name: aktiv, widget: boolean, default: false }
+              - { label: Text, name: text, widget: string }
+          - label: Impressum
+            name: impressum
+            widget: object
+            fields:
+              - { label: Vor- und Nachname, name: name, widget: string }
+              - { label: Straße und Hausnummer, name: strasse, widget: string }
+              - { label: PLZ und Ort, name: ort, widget: string }
+              - { label: Telefon, name: telefon, widget: string, required: false }
+              - { label: E-Mail, name: email, widget: string }

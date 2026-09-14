@@ -1,0 +1,78 @@
+---
+import RechtstextLayout from '../layouts/RechtstextLayout.astro';
+import { einstellungen, mailLink } from '../lib/einstellungen';
+
+const { name, strasse, ort, email } = einstellungen.impressum;
+
+const widerrufsVorlage = [
+  'Hiermit widerrufe ich den von mir abgeschlossenen Vertrag über den Kauf folgender Ware:',
+  '',
+  'Stück: ',
+  'Bestellt am: ',
+  'Erhalten am: ',
+  'Name: ',
+  'Anschrift: ',
+  '',
+  'Datum: ',
+].join('\n');
+---
+
+<RechtstextLayout titel="Widerrufsbelehrung" beschreibung="Widerrufsbelehrung und Widerrufsformular des Cremer-Ladens.">
+  <h2>Widerrufsrecht</h2>
+  <p>
+    Du hast das Recht, binnen vierzehn Tagen ohne Angabe von Gründen diesen Vertrag zu widerrufen. Die Widerrufsfrist
+    beträgt vierzehn Tage ab dem Tag, an dem du oder ein von dir benannter Dritter, der nicht der Beförderer ist, die
+    Waren in Besitz genommen hast bzw. hat.
+  </p>
+  <p>
+    Um dein Widerrufsrecht auszuüben, musst du mich (<mark class="platzhalter">{name}</mark>, <mark class="platzhalter"
+      >{strasse}</mark
+    >, <mark class="platzhalter">{ort}</mark>, E-Mail: {email}) mittels einer eindeutigen Erklärung (z. B. per E-Mail
+    oder über die Funktion „Vertrag widerrufen“ unten) über deinen Entschluss informieren. Zur Wahrung der Widerrufsfrist
+    reicht es aus, dass du die Mitteilung vor Ablauf der Frist absendest.
+  </p>
+
+  <h2>Folgen des Widerrufs</h2>
+  <p>
+    <mark class="platzhalter"
+      >Vollständigen Mustertext nach Anlage 1 zu Art. 246a § 1 Abs. 2 EGBGB einsetzen (Rückzahlung, Rücksendung, Kosten
+      der Rücksendung, Wertersatz).</mark
+    >
+  </p>
+
+  <h2>Ausschluss des Widerrufsrechts</h2>
+  <p>
+    Das Widerrufsrecht besteht nicht bei Verträgen zur Lieferung von Waren, die nicht vorgefertigt sind und für deren
+    Herstellung eine individuelle Auswahl oder Bestimmung durch dich maßgeblich ist (z. B. Anfertigungen auf Wunsch).
+  </p>
+
+  <h2 id="widerrufen">Vertrag widerrufen</h2>
+  <p>
+    Du möchtest einen Kauf widerrufen? Über den Button öffnet sich eine vorbereitete E-Mail – bitte ergänze die
+    Angaben und sende sie ab.
+    <mark class="platzhalter"
+      >Seit dem 19.06.2026 gelten neue Vorgaben für eine elektronische Widerrufsfunktion – bitte prüfen lassen, ob diese
+      Lösung ausreicht.</mark
+    >
+  </p>
+  <p>
+    <a class="button" href={mailLink('Widerruf meines Kaufs', widerrufsVorlage)}>Vertrag widerrufen</a>
+  </p>
+
+  <h2>Muster-Widerrufsformular</h2>
+  <p>(Wenn du den Vertrag widerrufen willst, dann fülle bitte dieses Formular aus und sende es zurück.)</p>
+  <p>
+    An <mark class="platzhalter">{name}</mark>, <mark class="platzhalter">{strasse}</mark>, <mark class="platzhalter"
+      >{ort}</mark
+    >, E-Mail: {email}
+  </p>
+  <p>
+    Hiermit widerrufe(n) ich/wir (*) den von mir/uns (*) abgeschlossenen Vertrag über den Kauf der folgenden Waren (*)<br />
+    Bestellt am (*)/erhalten am (*)<br />
+    Name des/der Verbraucher(s)<br />
+    Anschrift des/der Verbraucher(s)<br />
+    Unterschrift des/der Verbraucher(s) (nur bei Mitteilung auf Papier)<br />
+    Datum
+  </p>
+  <p>(*) Unzutreffendes streichen.</p>
+</RechtstextLayout>

@@ -1,0 +1,44 @@
+---
+import { einstellungen } from '../lib/einstellungen';
+
+const { aktiv, text } = einstellungen.pause;
+---
+
+{
+  aktiv && text && (
+    <div class="pause" role="note">
+      <div class="container pause__innen">
+        <span class="pause__punkt" aria-hidden="true" />
+        <p>{text}</p>
+      </div>
+    </div>
+  )
+}
+
+<style>
+  .pause {
+    background: color-mix(in srgb, var(--farbe-senf) 30%, var(--farbe-wand));
+    font-size: 0.92rem;
+  }
+
+  .pause__innen {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    padding-block: 0.55rem;
+    text-align: center;
+  }
+
+  .pause p {
+    margin: 0;
+  }
+
+  .pause__punkt {
+    flex: none;
+    width: 0.55rem;
+    height: 0.55rem;
+    border-radius: 50%;
+    background: var(--farbe-senf);
+  }
+</style>

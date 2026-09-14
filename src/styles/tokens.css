@@ -1,0 +1,50 @@
+/*
+ * Design-Tokens für Cremer-Laden
+ * „Kleine Galerie“: ruhige Grundtöne, gedämpfte Bilderbuch-Akzente.
+ * Akzentfarben nie hinter Produktfotos einsetzen.
+ */
+:root {
+  /* Grundtöne */
+  --farbe-wand: #faf6ef;
+  --farbe-flaeche: #ffffff;
+  --farbe-linie: #e6ded2;
+  --farbe-tinte: #2b2833;
+  --farbe-tinte-sanft: #5e5866;
+
+  /* Bilderbuch-Akzente (gedämpft) */
+  --farbe-rot: #b5523b;
+  --farbe-senf: #e3ae4a;
+  --farbe-blau: #9cc3dd;
+  --farbe-gruen: #93b494;
+  --farbe-rose: #e9b7bf;
+
+  /* Farbige Bänder (Abschnitte, Footer) */
+  --farbe-band: color-mix(in srgb, var(--farbe-gruen) 20%, var(--farbe-wand));
+
+  /* Status-Punkte wie in der Galerie */
+  --farbe-punkt-verfuegbar: #5f9462;
+  --farbe-punkt-reserviert: #e3ae4a;
+  --farbe-punkt-verkauft: #c8412f;
+
+  /* Schriften (selbst gehostet über Fontsource) */
+  --schrift-titel: 'Fraunces Variable', Georgia, 'Times New Roman', serif;
+  --schrift-text: 'Nunito Variable', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+
+  /* Bilder im Social-Media-Stil */
+  --bild-format: 4 / 5;
+  --radius-bild: 14px;
+  --radius-klein: 10px;
+  --schatten-bild: 0 1px 2px rgb(43 40 51 / 0.06), 0 8px 24px rgb(43 40 51 / 0.1);
+  --schatten-bild-hover: 0 2px 4px rgb(43 40 51 / 0.07), 0 14px 34px rgb(43 40 51 / 0.15);
+
+  /* Abstände und Breiten */
+  --rand: clamp(1rem, 4vw, 2.5rem);
+  --abstand-abschnitt: clamp(3.5rem, 2.5rem + 5vw, 7rem);
+  --abstand-raster: clamp(1.25rem, 0.75rem + 2vw, 2.75rem);
+  --breite-max: 1200px;
+  --breite-text: 66ch;
+
+  /* Bewegung */
+  --dauer: 0.35s;
+  --kurve: cubic-bezier(0.22, 0.61, 0.36, 1);
+}

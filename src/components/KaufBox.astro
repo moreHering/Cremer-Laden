@@ -1,0 +1,76 @@
+---
+import { mailLink } from '../lib/einstellungen';
+import { url } from '../lib/url';
+import type { Produkt } from '../lib/produkte';
+
+interface Props {
+  produkt: Produkt;
+}
+
+const { produkt } = Astro.props;
+const { titel, status, kaufLink, kaufAnbieter } = produkt.data;
+const anbieter = { stripe: 'Stripe', paypal: 'PayPal' }[kaufAnbieter];
+const taetigkeit = produkt.collection === 'aquarelle' ? 'male' : 'fädle';
+---
+
+<div class="kaufbox">
+  {
+    status === 'verfuegbar' && kaufLink && (
+      <>
+        <p class="kaufbox__hinweis">
+          Du wirst zur sicheren Bezahlung bei {anbieter} weitergeleitet. Es gelten meine <a href={url('agb')}>AGB</a>{' '}
+          und die <a href={url('widerruf')}>Widerrufsbelehrung</a>.
+        </p>
+        <a class="button button--breit" href={kaufLink}>
+          Kaufen
+        </a>
+      </>
+    )
+  }
+
+  {
+    status === 'verfuegbar' && !kaufLink && (
+      <a class="button button--breit" href={mailLink(`Anfrage: ${titel}`)}>
+        Per E-Mail anfragen
+      </a>
+    )
+  }
+
+  {
+    status !== 'verfuegbar' && (
+      <p class="kaufbox__vergeben">
+        {status === 'verkauft'
+          ? 'Dieses Stück hat schon ein neues Zuhause gefunden.'
+          : 'Dieses Stück ist gerade reserviert.'}{' '}
+        Gern {taetigkeit} ich dir etwas Ähnliches – schreib mir einfach.
+      </p>
+    )
+  }
+
+  <a
+    class="button button--sekundaer button--breit"
+    href={mailLink(status === 'verfuegbar' ? `Frage zu: ${titel}` : `Ähnliches wie: ${titel}`)}
+  >
+    {status === 'verfuegbar' ? 'Frage stellen' : 'Ähnliches anfragen'}
+  </a>
+</div>
+
+<style>
+  .kaufbox {
+    display: grid;
+    gap: 0.7rem;
+  }
+
+  .kaufbox__hinweis,
+  .kaufbox__vergeben {
+    margin: 0 0 0.2rem;
+    color: var(--farbe-tinte-sanft);
+    font-size: 0.9rem;
+    line-height: 1.5;
+  }
+
+  .kaufbox__vergeben {
+    font-size: 1rem;
+    color: var(--farbe-tinte);
+  }
+</style>

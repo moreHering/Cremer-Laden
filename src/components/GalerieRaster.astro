@@ -1,0 +1,29 @@
+---
+/** Ruhiges Galerie-Raster: 1 Spalte (sehr schmal), 2 (Handy quer/Tablet), 3 (Desktop). */
+---
+
+<div class="galerie" data-galerie>
+  <slot />
+</div>
+
+<style>
+  .galerie {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: calc(var(--abstand-raster) * 1.25) var(--abstand-raster);
+  }
+
+  @media (min-width: 440px) {
+    .galerie {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 900px) {
+    .galerie {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+</style>

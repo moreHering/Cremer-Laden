@@ -1,0 +1,108 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import DekoFlaeche from '../components/DekoFlaeche.astro';
+import { einstellungen, mailLink } from '../lib/einstellungen';
+import { url } from '../lib/url';
+---
+
+<BaseLayout
+  titel="Kontakt"
+  beschreibung="Fragen zu einem Stück oder ein Wunsch nach einer Anfertigung? Schreib dem Cremer-Laden gern eine E-Mail."
+>
+  <section class="abschnitt kontakt">
+    <DekoFlaeche variante="himmel" seite="rechts" />
+    <div class="container">
+      <div class="kontakt__innen">
+        <p class="kapitaelchen">Kontakt</p>
+        <h1>Schreib mir gern!</h1>
+        <p class="kontakt__einleitung">
+          Du hast eine Frage zu einem Stück, wünschst dir Ohrringe in deinen Lieblingsfarben oder ein Aquarell als
+          Geschenk? Ich freue mich über jede Nachricht und antworte meist innerhalb von ein, zwei Tagen – nach Feierabend.
+        </p>
+
+        <div class="kontakt__karten">
+          <a class="kontakt-karte" href={mailLink('Hallo aus dem Cremer-Laden')}>
+            <span class="kapitaelchen">E-Mail</span>
+            <span class="kontakt-karte__wert">{einstellungen.email}</span>
+          </a>
+          {
+            einstellungen.instagram && (
+              <a class="kontakt-karte" href={einstellungen.instagram} rel="me noopener">
+                <span class="kapitaelchen">Instagram</span>
+                <span class="kontakt-karte__wert">Neue Stücke &amp; Einblicke</span>
+              </a>
+            )
+          }
+        </div>
+
+        <p class="kontakt__hinweis">
+          Wenn du mir schreibst, nutze ich deine Angaben nur, um dir zu antworten. Mehr dazu in der <a
+            href={url('datenschutz')}>Datenschutzerklärung</a
+          >.
+        </p>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .kontakt {
+    padding-top: clamp(2.5rem, 1.5rem + 4vw, 5rem);
+  }
+
+  .kontakt__innen {
+    max-width: 44rem;
+  }
+
+  .kontakt__innen h1 {
+    margin: 0.4rem 0 1rem;
+  }
+
+  .kontakt__einleitung {
+    color: var(--farbe-tinte-sanft);
+    font-size: 1.12rem;
+  }
+
+  .kontakt__karten {
+    display: grid;
+    gap: 1rem;
+    margin: 2.25rem 0;
+  }
+
+  @media (min-width: 640px) {
+    .kontakt__karten {
+      grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+    }
+  }
+
+  .kontakt-karte {
+    display: grid;
+    gap: 0.35rem;
+    padding: 1.4rem 1.5rem;
+    border-radius: var(--radius-bild);
+    background: var(--farbe-flaeche);
+    box-shadow: var(--schatten-bild);
+    color: inherit;
+    text-decoration: none;
+    transition:
+      transform var(--dauer) var(--kurve),
+      box-shadow var(--dauer) var(--kurve);
+  }
+
+  .kontakt-karte:hover {
+    color: inherit;
+    transform: translateY(-3px);
+    box-shadow: var(--schatten-bild-hover);
+  }
+
+  .kontakt-karte__wert {
+    font-family: var(--schrift-titel);
+    font-size: 1.3rem;
+    overflow-wrap: anywhere;
+  }
+
+  .kontakt__hinweis {
+    color: var(--farbe-tinte-sanft);
+    font-size: 0.92rem;
+  }
+</style>

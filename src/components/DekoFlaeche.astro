@@ -1,0 +1,87 @@
+---
+/**
+ * Sehr blasse Aquarell-Fläche für den Hintergrund eines Abschnitts.
+ * Sie liegt in einer Zone am oberen Rand, die nach unten weich ausblendet –
+ * so bleibt sie hinter Überschriften und Texten und nie hinter Produktfotos.
+ * Der Abschnitt braucht position: relative (.abschnitt hat das bereits).
+ */
+interface Props {
+  variante?: 'himmel' | 'wiese' | 'rose';
+  seite?: 'links' | 'rechts';
+  /** Höhe der Zone ab Abschnittsbeginn */
+  hoehe?: string;
+  breite?: string;
+}
+
+const { variante = 'himmel', seite = 'links', hoehe = '26rem', breite = 'min(640px, 95vw)' } = Astro.props;
+const filterId = `aquarell-${Math.random().toString(36).slice(2, 9)}`;
+
+const formen = {
+  gross: 'M120 90C210 20 390 30 470 110s70 210-20 280-250 60-330-10S30 160 120 90Z',
+  mittel: 'M300 180c80-30 220 10 240 100s-70 160-160 140-150-90-140-160c10-50 20-65 60-80Z',
+  klein: 'M90 300c50-40 140-20 150 40s-60 100-120 80-80-80-30-120Z',
+};
+
+const farben = {
+  himmel: ['var(--farbe-blau)', 'var(--farbe-rose)', 'var(--farbe-senf)'],
+  wiese: ['var(--farbe-gruen)', 'var(--farbe-senf)', 'var(--farbe-blau)'],
+  rose: ['var(--farbe-rose)', 'var(--farbe-blau)', 'var(--farbe-gruen)'],
+}[variante];
+---
+
+<div class="deko-zone" style={`--deko-hoehe: ${hoehe}; --deko-breite: ${breite}`} aria-hidden="true">
+  <div class:list={['deko', `deko--${seite}`]}>
+    <svg viewBox="0 0 600 500" focusable="false">
+      <defs>
+        <filter id={filterId} x="-25%" y="-25%" width="150%" height="150%">
+          <feTurbulence type="fractalNoise" baseFrequency="0.012" numOctaves="3" seed="11" result="rauschen"></feTurbulence>
+          <feDisplacementMap in="SourceGraphic" in2="rauschen" scale="42" xChannelSelector="R" yChannelSelector="G"></feDisplacementMap>
+          <feGaussianBlur stdDeviation="2.5"></feGaussianBlur>
+        </filter>
+      </defs>
+      <g filter={`url(#${filterId})`}>
+        <path d={formen.gross} style={`fill: ${farben[0]}; opacity: 0.34`}></path>
+        <path d={formen.mittel} style={`fill: ${farben[1]}; opacity: 0.3`}></path>
+        <path d={formen.klein} style={`fill: ${farben[2]}; opacity: 0.32`}></path>
+      </g>
+    </svg>
+  </div>
+</div>
+
+<style>
+  .deko-zone {
+    position: absolute;
+    inset: 0 0 auto 0;
+    z-index: 0;
+    height: var(--deko-hoehe);
+    overflow: hidden;
+    pointer-events: none;
+    user-select: none;
+    -webkit-mask-image: linear-gradient(to bottom, #000 55%, transparent);
+    mask-image: linear-gradient(to bottom, #000 55%, transparent);
+  }
+
+  .deko {
+    position: absolute;
+    top: -12%;
+    width: var(--deko-breite);
+  }
+
+  .deko--links {
+    left: calc(var(--deko-breite) * -0.28);
+  }
+
+  .deko--rechts {
+    right: calc(var(--deko-breite) * -0.28);
+  }
+
+  .deko svg {
+    width: 100%;
+    height: auto;
+    overflow: visible;
+  }
+
+  .deko path {
+    mix-blend-mode: multiply;
+  }
+</style>

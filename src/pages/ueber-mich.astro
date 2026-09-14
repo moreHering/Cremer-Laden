@@ -1,0 +1,137 @@
+---
+import { getEntry, render } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import DekoFlaeche from '../components/DekoFlaeche.astro';
+import GalerieRaster from '../components/GalerieRaster.astro';
+import Produktbild from '../components/Produktbild.astro';
+import { url } from '../lib/url';
+
+const seite = await getEntry('seiten', 'ueber-mich');
+if (!seite) throw new Error('Die Datei src/content/seiten/ueber-mich.md fehlt.');
+
+const { Content } = await render(seite);
+const { titel, einleitung, portraet, werkstattBilder } = seite.data;
+---
+
+<BaseLayout
+  titel={titel}
+  beschreibung={einleitung ?? 'Wer hinter dem Cremer-Laden steckt – eine kleine Hobby-Werkstatt für Aquarelle und Perlenohrringe.'}
+>
+  <section class="abschnitt ueber">
+    <DekoFlaeche variante="rose" seite="rechts" hoehe="30rem" />
+    <div class="container ueber__raster">
+      <div class="ueber__text">
+        <p class="kapitaelchen">{titel}</p>
+        <h1>{einleitung ?? titel}</h1>
+        <div class="prosa">
+          <Content />
+        </div>
+      </div>
+
+      {
+        portraet && (
+          <Produktbild
+            bild={portraet.bild}
+            alt={portraet.alt}
+            laden="eager"
+            sizes="(min-width: 900px) 420px, 88vw"
+            class="ueber__portraet"
+          />
+        )
+      }
+    </div>
+  </section>
+
+  {
+    werkstattBilder.length > 0 && (
+      <section class="abschnitt werkstatt" aria-labelledby="werkstatt-titel">
+        <div class="container">
+          <div class="abschnitt-kopf">
+            <div>
+              <p class="kapitaelchen">Einblicke</p>
+              <h2 id="werkstatt-titel">Meine kleine Werkstatt</h2>
+            </div>
+          </div>
+          <GalerieRaster>
+            {werkstattBilder.map((eintrag) => (
+              <Produktbild bild={eintrag.bild} alt={eintrag.alt} />
+            ))}
+          </GalerieRaster>
+        </div>
+      </section>
+    )
+  }
+
+  <section class="abschnitt ueber-cta">
+    <div class="container ueber-cta__innen">
+      <h2>Lust auf ein Einzelstück?</h2>
+      <p>Schau dich in Ruhe um – oder schreib mir, wenn du dir etwas ganz Bestimmtes wünschst.</p>
+      <div class="ueber-cta__knoepfe">
+        <a class="button" href={url('aquarelle')}>Aquarelle</a>
+        <a class="button" href={url('ohrringe')}>Ohrringe</a>
+        <a class="button button--sekundaer" href={url('kontakt')}>Kontakt</a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .ueber {
+    padding-top: clamp(2.5rem, 1.5rem + 4vw, 5rem);
+  }
+
+  .ueber__raster {
+    display: grid;
+    gap: clamp(2.5rem, 1.5rem + 3vw, 4.5rem);
+    align-items: start;
+  }
+
+  @media (min-width: 900px) {
+    .ueber__raster {
+      grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+    }
+
+    .ueber__text {
+      order: 2;
+    }
+
+    .ueber__raster :global(.ueber__portraet) {
+      position: sticky;
+      top: 6rem;
+    }
+  }
+
+  .ueber__raster :global(.ueber__portraet) {
+    width: 100%;
+    max-width: 26rem;
+    margin-inline: auto;
+  }
+
+  .ueber__text h1 {
+    margin: 0.5rem 0 1.5rem;
+  }
+
+  .werkstatt {
+    padding-top: 0;
+  }
+
+  .ueber-cta {
+    padding-top: 0;
+  }
+
+  .ueber-cta__innen {
+    text-align: center;
+  }
+
+  .ueber-cta__innen p {
+    color: var(--farbe-tinte-sanft);
+  }
+
+  .ueber-cta__knoepfe {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+  }
+</style>

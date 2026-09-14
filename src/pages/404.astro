@@ -1,0 +1,52 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Kritzelei from '../components/Kritzelei.astro';
+import { url } from '../lib/url';
+---
+
+<BaseLayout titel="Seite nicht gefunden" beschreibung="Diese Seite gibt es im Cremer-Laden leider nicht." noindex>
+  <section class="abschnitt fehler">
+    <div class="container fehler__innen">
+      <Kritzelei art="perlen" class="fehler__kritzelei" />
+      <p class="kapitaelchen">Fehler 404</p>
+      <h1>Hier ist wohl eine Perle weggerollt …</h1>
+      <p>
+        Diese Seite gibt es leider nicht (mehr). Vielleicht wurde ein Stück umbenannt oder hat schon ein neues Zuhause – in
+        der Galerie findest du alles, was es gerade gibt.
+      </p>
+      <div class="fehler__knoepfe">
+        <a class="button" href={url('/')}>Zur Startseite</a>
+        <a class="button button--sekundaer" href={url('aquarelle')}>Aquarelle</a>
+        <a class="button button--sekundaer" href={url('ohrringe')}>Ohrringe</a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .fehler__innen {
+    max-width: 40rem;
+    text-align: center;
+  }
+
+  .fehler__innen :global(.fehler__kritzelei) {
+    width: 11rem;
+    margin: 0 auto 1.5rem;
+  }
+
+  .fehler__innen h1 {
+    margin: 0.4rem 0 1rem;
+  }
+
+  .fehler__innen p:not(.kapitaelchen) {
+    color: var(--farbe-tinte-sanft);
+  }
+
+  .fehler__knoepfe {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.75rem;
+    margin-top: 2rem;
+  }
+</style>

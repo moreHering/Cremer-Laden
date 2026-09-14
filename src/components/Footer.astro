@@ -1,0 +1,166 @@
+---
+import Logo from './Logo.astro';
+import Kritzelei from './Kritzelei.astro';
+import Wellentrenner from './Wellentrenner.astro';
+import { einstellungen } from '../lib/einstellungen';
+import { url } from '../lib/url';
+
+const spalten = [
+  {
+    titel: 'Laden',
+    links: [
+      { ziel: 'aquarelle', text: 'Aquarelle' },
+      { ziel: 'ohrringe', text: 'Ohrringe' },
+      { ziel: 'ueber-mich', text: 'Über mich' },
+    ],
+  },
+  {
+    titel: 'Hilfe',
+    links: [
+      { ziel: 'kauf-und-versand', text: 'Kauf & Versand' },
+      { ziel: 'kontakt', text: 'Kontakt' },
+      { ziel: 'widerruf#widerrufen', text: 'Vertrag widerrufen' },
+    ],
+  },
+  {
+    titel: 'Rechtliches',
+    links: [
+      { ziel: 'impressum', text: 'Impressum' },
+      { ziel: 'datenschutz', text: 'Datenschutz' },
+      { ziel: 'agb', text: 'AGB' },
+      { ziel: 'widerruf', text: 'Widerrufsbelehrung' },
+    ],
+  },
+];
+
+const jahr = new Date().getFullYear();
+---
+
+<footer class="fuss">
+  <Wellentrenner farbe="var(--fuss-farbe)" />
+  <div class="fuss__flaeche">
+    <div class="container fuss__innen">
+      <div class="fuss__marke">
+        <a href={url('/')} class="fuss__logo"><Logo /></a>
+        <p>
+          Handgemalte Aquarelle und Ohrringe aus Miyuki-Perlen – entstanden in einer kleinen Hobby-Werkstatt, Stück für
+          Stück.
+        </p>
+        <Kritzelei art="perlen" class="fuss__kritzelei" />
+      </div>
+
+      <nav class="fuss__spalten" aria-label="Weitere Seiten">
+        {
+          spalten.map((spalte) => (
+            <div>
+              <p class="kapitaelchen fuss__titel">{spalte.titel}</p>
+              <ul>
+                {spalte.links.map((link) => (
+                  <li>
+                    <a href={url(link.ziel)}>{link.text}</a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))
+        }
+      </nav>
+    </div>
+
+    <div class="container fuss__unten">
+      <p>© {jahr} Cremer-Laden · mit viel Geduld von Hand gemacht</p>
+      <p class="fuss__kontakt">
+        <a href={`mailto:${einstellungen.email}`}>{einstellungen.email}</a>
+        {einstellungen.instagram && <a href={einstellungen.instagram} rel="me noopener">Instagram</a>}
+      </p>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .fuss {
+    --fuss-farbe: color-mix(in srgb, var(--farbe-blau) 30%, var(--farbe-wand));
+    margin-top: clamp(1rem, 3vw, 2rem);
+  }
+
+  .fuss__flaeche {
+    background: var(--fuss-farbe);
+    padding-block: clamp(2rem, 1rem + 3vw, 3.5rem) 1.5rem;
+  }
+
+  .fuss__innen {
+    display: grid;
+    gap: 2.5rem;
+  }
+
+  @media (min-width: 820px) {
+    .fuss__innen {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr);
+      gap: 4rem;
+    }
+  }
+
+  .fuss__logo {
+    display: inline-block;
+    margin-bottom: 1rem;
+    text-decoration: none;
+  }
+
+  .fuss__marke p {
+    max-width: 36ch;
+    color: var(--farbe-tinte-sanft);
+  }
+
+  .fuss__marke :global(.fuss__kritzelei) {
+    width: 9rem;
+    margin-top: 1.25rem;
+  }
+
+  .fuss__spalten {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(9.5rem, 1fr));
+    gap: 1.75rem;
+  }
+
+  .fuss__titel {
+    margin-bottom: 0.6rem;
+  }
+
+  .fuss__spalten ul {
+    display: grid;
+    gap: 0.4rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .fuss__spalten a {
+    text-decoration: none;
+  }
+
+  .fuss__spalten a:hover {
+    text-decoration: underline;
+  }
+
+  .fuss__unten {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 0.5rem 1.5rem;
+    margin-top: 2.5rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid color-mix(in srgb, var(--farbe-tinte) 12%, transparent);
+    font-size: 0.9rem;
+    color: var(--farbe-tinte-sanft);
+  }
+
+  .fuss__unten p {
+    margin: 0;
+  }
+
+  .fuss__kontakt {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.25rem;
+  }
+</style>

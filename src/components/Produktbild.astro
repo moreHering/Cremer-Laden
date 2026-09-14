@@ -1,0 +1,50 @@
+---
+/**
+ * Produktfoto im Social-Media-Stil: Hochformat 4:5, abgerundete Ecken, weicher Schatten.
+ * Der Zuschnitt passiert nur per CSS – das Original bleibt vollständig (siehe Lightbox).
+ */
+import type { ImageMetadata } from 'astro';
+import { Picture } from 'astro:assets';
+import { fokusPosition } from '../lib/format';
+
+interface Props {
+  bild: ImageMetadata;
+  alt: string;
+  fokus?: keyof typeof fokusPosition;
+  sizes?: string;
+  laden?: 'lazy' | 'eager';
+  transitionName?: string;
+  /** false = ohne Radius und Schatten (z. B. im Karussell, das beides selbst trägt) */
+  schatten?: boolean;
+  class?: string;
+}
+
+const {
+  bild,
+  alt,
+  fokus = 'mitte',
+  sizes = '(min-width: 1240px) 380px, (min-width: 900px) 30vw, (min-width: 440px) 46vw, 92vw',
+  laden = 'lazy',
+  transitionName,
+  schatten = true,
+  class: klasse,
+} = Astro.props;
+---
+
+<div
+  class:list={['produktbild', { 'produktbild--flach': !schatten }, klasse]}
+  style={transitionName ? `view-transition-name: ${transitionName}` : undefined}
+>
+  <Picture
+    src={bild}
+    alt={alt}
+    widths={[320, 480, 640, 960, 1280]}
+    sizes={sizes}
+    formats={['avif']}
+    fallbackFormat="webp"
+    loading={laden}
+    decoding={laden === 'eager' ? 'auto' : 'async'}
+    fetchpriority={laden === 'eager' ? 'high' : 'auto'}
+    style={`object-position: ${fokusPosition[fokus]}`}
+  />
+</div>

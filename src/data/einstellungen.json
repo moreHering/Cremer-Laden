@@ -1,0 +1,17 @@
+{
+  "name": "[Vorname]",
+  "email": "hallo@example.com",
+  "instagram": "",
+  "versandText": "Innerhalb Deutschlands verschicke ich gut verpackt als Brief oder Päckchen für 3,90 €. Ab 60 € Bestellwert ist der Versand kostenlos.",
+  "pause": {
+    "aktiv": false,
+    "text": "Die Werkstatt macht gerade eine kleine Pause – Bestellungen verschicke ich wieder ab dem [Datum]."
+  },
+  "impressum": {
+    "name": "[Vor- und Nachname]",
+    "strasse": "[Straße und Hausnummer]",
+    "ort": "[PLZ Ort]",
+    "telefon": "",
+    "email": "hallo@example.com"
+  }
+}

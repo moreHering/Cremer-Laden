@@ -1,0 +1,189 @@
+---
+/**
+ * Dezente Filterleiste für die Galerie.
+ * Ohne JavaScript bleibt sie verborgen und alle Werke sind sichtbar.
+ */
+import Kritzelei from './Kritzelei.astro';
+
+interface Props {
+  merkmale: string[];
+  merkmalName: string;
+}
+
+const { merkmale, merkmalName } = Astro.props;
+---
+
+<form class="filter" data-filter hidden>
+  <div class="filter__gruppe" role="radiogroup" aria-labelledby="filter-anzeigen">
+    <span id="filter-anzeigen" class="kapitaelchen filter__name">Anzeigen</span>
+    <label><input type="radio" name="nur" value="" checked /><span>Alle</span></label>
+    <label><input type="radio" name="nur" value="verfuegbar" /><span>Nur verfügbare</span></label>
+  </div>
+
+  {
+    merkmale.length > 1 && (
+      <div class="filter__gruppe" role="radiogroup" aria-labelledby="filter-merkmal">
+        <span id="filter-merkmal" class="kapitaelchen filter__name">
+          {merkmalName}
+        </span>
+        <label>
+          <input type="radio" name="merkmal" value="" checked />
+          <span>Alle</span>
+        </label>
+        {merkmale.map((merkmal) => (
+          <label>
+            <input type="radio" name="merkmal" value={merkmal} />
+            <span>{merkmal}</span>
+          </label>
+        ))}
+      </div>
+    )
+  }
+
+  <p class="filter__anzahl" data-filter-anzahl aria-live="polite"></p>
+</form>
+
+<div class="filter-leer" data-filter-leer hidden>
+  <Kritzelei art="bluemchen" class="filter-leer__kritzelei" />
+  <p>Gerade passt kein Stück zu dieser Auswahl.</p>
+  <button type="button" class="button button--sekundaer" data-filter-zuruecksetzen>Filter zurücksetzen</button>
+</div>
+
+<script>
+  const form = document.querySelector<HTMLFormElement>('[data-filter]');
+
+  if (form) {
+    const werke = [...document.querySelectorAll<HTMLElement>('[data-werk]')];
+    const anzahl = form.querySelector<HTMLElement>('[data-filter-anzahl]');
+    const leer = document.querySelector<HTMLElement>('[data-filter-leer]');
+    const parameter = new URLSearchParams(location.search);
+
+    const waehle = (name: string, wert: string) => {
+      const feld = [...form.querySelectorAll<HTMLInputElement>(`input[name="${name}"]`)].find((f) => f.value === wert);
+      if (feld) feld.checked = true;
+    };
+
+    waehle('nur', parameter.get('nur') ?? '');
+    waehle('merkmal', parameter.get('merkmal') ?? '');
+
+    const anwenden = () => {
+      const daten = new FormData(form);
+      const nur = String(daten.get('nur') ?? '');
+      const merkmal = String(daten.get('merkmal') ?? '');
+      let sichtbar = 0;
+
+      for (const werk of werke) {
+        const passt =
+          (!nur || werk.dataset.status === nur) &&
+          (!merkmal || (werk.dataset.merkmale ?? '').split('|').includes(merkmal));
+        werk.hidden = !passt;
+        if (passt) sichtbar++;
+      }
+
+      if (anzahl) anzahl.textContent = `${sichtbar} ${sichtbar === 1 ? 'Stück' : 'Stücke'}`;
+      if (leer) leer.hidden = sichtbar > 0;
+
+      const neu = new URLSearchParams();
+      if (nur) neu.set('nur', nur);
+      if (merkmal) neu.set('merkmal', merkmal);
+      const query = neu.toString();
+      history.replaceState(null, '', query ? `?${query}` : location.pathname);
+    };
+
+    form.addEventListener('change', anwenden);
+    form.addEventListener('submit', (event) => event.preventDefault());
+    document.querySelector('[data-filter-zuruecksetzen]')?.addEventListener('click', () => {
+      form.reset();
+      anwenden();
+    });
+
+    form.hidden = false;
+    anwenden();
+  }
+</script>
+
+<style>
+  .filter {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.75rem 2.75rem;
+    margin-bottom: clamp(1.75rem, 1rem + 2vw, 2.75rem);
+    padding-block: 0.9rem;
+    border-block: 1px solid var(--farbe-linie);
+  }
+
+  .filter__gruppe {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.3rem 1.1rem;
+  }
+
+  .filter__name {
+    margin-right: 0.2rem;
+  }
+
+  .filter label {
+    position: relative;
+    cursor: pointer;
+  }
+
+  .filter input {
+    position: absolute;
+    inset: 0;
+    margin: 0;
+    opacity: 0;
+    cursor: pointer;
+  }
+
+  .filter label span {
+    display: inline-block;
+    padding: 0.15rem 0;
+    border-bottom: 2px solid transparent;
+    color: var(--farbe-tinte-sanft);
+    font-weight: 600;
+    transition:
+      color 0.2s,
+      border-color 0.2s;
+  }
+
+  .filter label:hover span {
+    color: var(--farbe-tinte);
+  }
+
+  .filter input:checked + span {
+    border-bottom-color: var(--farbe-rot);
+    color: var(--farbe-tinte);
+  }
+
+  .filter input:focus-visible + span {
+    outline: 2.5px solid var(--farbe-rot);
+    outline-offset: 3px;
+    border-radius: 3px;
+  }
+
+  .filter__anzahl {
+    margin: 0 0 0 auto;
+    color: var(--farbe-tinte-sanft);
+    font-size: 0.9rem;
+  }
+
+  .filter-leer {
+    display: grid;
+    justify-items: center;
+    gap: 0.75rem;
+    padding-block: 3rem;
+    text-align: center;
+  }
+
+  .filter-leer p {
+    margin: 0;
+  }
+
+  .filter-leer :global(.filter-leer__kritzelei) {
+    width: 3.5rem;
+  }
+</style>

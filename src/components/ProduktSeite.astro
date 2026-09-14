@@ -1,0 +1,183 @@
+---
+/** Gemeinsame Detailseite für Aquarelle und Ohrringe. */
+import { getImage } from 'astro:assets';
+import { render } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import BildKarussell from './BildKarussell.astro';
+import GalerieRaster from './GalerieRaster.astro';
+import Lightbox from './Lightbox.astro';
+import WerkKarte from './WerkKarte.astro';
+import Werkschild from './Werkschild.astro';
+import {
+  kurzbeschreibung,
+  ladeSammlung,
+  produktUrl,
+  sammlungen,
+  transitionName,
+  type Produkt,
+} from '../lib/produkte';
+import { url } from '../lib/url';
+
+interface Props {
+  produkt: Produkt;
+}
+
+const { produkt } = Astro.props;
+const { titel, bilder, status, preis } = produkt.data;
+const { Content } = await render(produkt);
+const info = sammlungen[produkt.collection];
+const beschreibung = kurzbeschreibung(produkt);
+
+// Absolute Bild-URLs für Vorschaubild (Social Media) und strukturierte Daten
+const bildUrls = await Promise.all(
+  bilder.map(async ({ bild }) => {
+    const vorschau = await getImage({ src: bild, width: 1200, format: 'jpg' });
+    return new URL(vorschau.src, Astro.site).href;
+  }),
+);
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Product',
+  name: titel,
+  description: beschreibung,
+  image: bildUrls,
+  brand: { '@type': 'Brand', name: 'Cremer-Laden' },
+  offers: {
+    '@type': 'Offer',
+    price: preis.toFixed(2),
+    priceCurrency: 'EUR',
+    availability: {
+      verfuegbar: 'https://schema.org/InStock',
+      reserviert: 'https://schema.org/LimitedAvailability',
+      verkauft: 'https://schema.org/SoldOut',
+    }[status],
+    url: new URL(produktUrl(produkt), Astro.site).href,
+  },
+};
+
+const aehnliche = (await ladeSammlung(produkt.collection)).filter((p) => p.id !== produkt.id).slice(0, 3);
+---
+
+<BaseLayout titel={titel} beschreibung={beschreibung} bild={bildUrls[0]} jsonLd={jsonLd}>
+  <article class="container produkt">
+    <nav class="brotkrumen" aria-label="Brotkrumen">
+      <ol>
+        <li><a href={url('/')}>Start</a></li>
+        <li><a href={url(produkt.collection)}>{info.titel}</a></li>
+        <li><span aria-current="page">{titel}</span></li>
+      </ol>
+    </nav>
+
+    <div class="produkt__raster">
+      <div class="produkt__bilder">
+        <BildKarussell bilder={bilder} titel={titel} transitionName={transitionName(produkt)} />
+      </div>
+
+      <div class="produkt__info">
+        <Werkschild produkt={produkt} />
+
+        {
+          produkt.body?.trim() && (
+            <section class="produkt__geschichte prosa">
+              <h2>Über dieses Stück</h2>
+              <Content />
+            </section>
+          )
+        }
+      </div>
+    </div>
+  </article>
+
+  {
+    aehnliche.length > 0 && (
+      <section class="abschnitt aehnliche">
+        <div class="container">
+          <div class="abschnitt-kopf">
+            <h2>Das könnte dir auch gefallen</h2>
+            <a class="link-pfeil" href={url(produkt.collection)}>
+              Alle {info.titel}
+            </a>
+          </div>
+          <GalerieRaster>
+            {aehnliche.map((p) => (
+              <WerkKarte produkt={p} />
+            ))}
+          </GalerieRaster>
+        </div>
+      </section>
+    )
+  }
+
+  <Lightbox bilder={bilder} titel={titel} />
+</BaseLayout>
+
+<style>
+  .produkt {
+    padding-block: clamp(1.25rem, 1rem + 1.5vw, 2.25rem) var(--abstand-abschnitt);
+  }
+
+  .brotkrumen ol {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin: 0 0 clamp(1.25rem, 1rem + 1vw, 2rem);
+    padding: 0;
+    list-style: none;
+    color: var(--farbe-tinte-sanft);
+    font-size: 0.88rem;
+  }
+
+  .brotkrumen li + li::before {
+    content: '/';
+    margin-right: 0.4rem;
+    opacity: 0.5;
+  }
+
+  .brotkrumen a {
+    text-decoration: none;
+  }
+
+  .brotkrumen a:hover {
+    text-decoration: underline;
+  }
+
+  .produkt__raster {
+    display: grid;
+    gap: clamp(2rem, 1rem + 3vw, 4.5rem);
+  }
+
+  .produkt__bilder {
+    width: 100%;
+    max-width: 38rem;
+    margin-inline: auto;
+  }
+
+  @media (min-width: 900px) {
+    .produkt__raster {
+      grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+      align-items: start;
+    }
+
+    .produkt__bilder {
+      position: sticky;
+      top: 6rem;
+      /* Bild passt immer komplett in die Fensterhöhe */
+      max-width: min(100%, calc((100vh - 10rem) * 0.8));
+      margin-inline: 0;
+    }
+  }
+
+  .produkt__geschichte {
+    margin-top: 2.75rem;
+  }
+
+  .produkt__geschichte h2 {
+    margin-top: 0;
+    font-size: 1.5rem;
+  }
+
+  .aehnliche {
+    padding-top: 0;
+  }
+</style>

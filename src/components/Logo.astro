@@ -1,0 +1,49 @@
+---
+/** Wortmarke „Cremer-Laden“ mit Pinselstrich-C und zwei Perlen. */
+---
+
+<span class="logo">
+  <svg class="logo__zeichen" viewBox="0 0 40 40" aria-hidden="true" focusable="false">
+    <path class="logo__strich" d="M29 11.5a12 12 0 1 0 0 17"></path>
+    <circle class="logo__perle-blau" cx="30.6" cy="30.4" r="3.6"></circle>
+    <circle class="logo__perle-senf" cx="30.8" cy="9.6" r="2.8"></circle>
+  </svg>
+  <span class="logo__text">Cremer-Laden</span>
+</span>
+
+<style>
+  .logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--farbe-tinte);
+    font-family: var(--schrift-titel);
+    font-size: 1.45rem;
+    font-weight: 540;
+    font-variation-settings: 'SOFT' 100, 'WONK' 0;
+    letter-spacing: -0.015em;
+    line-height: 1;
+    white-space: nowrap;
+  }
+
+  .logo__zeichen {
+    width: 2.05rem;
+    height: 2.05rem;
+    flex: none;
+  }
+
+  .logo__strich {
+    fill: none;
+    stroke: var(--farbe-rot);
+    stroke-width: 4.6;
+    stroke-linecap: round;
+  }
+
+  .logo__perle-blau {
+    fill: #7fb0d3;
+  }
+
+  .logo__perle-senf {
+    fill: var(--farbe-senf);
+  }
+</style>

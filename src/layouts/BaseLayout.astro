@@ -1,0 +1,45 @@
+---
+import '@fontsource-variable/fraunces/full.css';
+import '@fontsource-variable/nunito/wght.css';
+import '@fontsource-variable/nunito/wght-italic.css';
+import '../styles/tokens.css';
+import '../styles/global.css';
+
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+import PauseBanner from '../components/PauseBanner.astro';
+import Seo from '../components/Seo.astro';
+import { url } from '../lib/url';
+
+interface Props {
+  titel: string;
+  beschreibung: string;
+  bild?: string;
+  jsonLd?: Record<string, unknown>;
+  noindex?: boolean;
+}
+
+const seo = Astro.props;
+---
+
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#faf6ef" />
+    <meta name="generator" content={Astro.generator} />
+    <link rel="icon" type="image/svg+xml" href={url('favicon.svg')} />
+    <link rel="sitemap" href={url('sitemap-index.xml')} />
+    <Seo {...seo} />
+  </head>
+  <body>
+    <a class="skip-link" href="#inhalt">Zum Inhalt springen</a>
+    <PauseBanner />
+    <Header />
+    <main id="inhalt">
+      <slot />
+    </main>
+    <Footer />
+  </body>
+</html>

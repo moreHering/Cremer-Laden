@@ -1,0 +1,13 @@
+---
+import { getCollection } from 'astro:content';
+import ProduktSeite from '../../components/ProduktSeite.astro';
+
+export async function getStaticPaths() {
+  const werke = await getCollection('ohrringe');
+  return werke.map((produkt) => ({ params: { slug: produkt.id }, props: { produkt } }));
+}
+
+const { produkt } = Astro.props;
+---
+
+<ProduktSeite produkt={produkt} />

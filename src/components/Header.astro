@@ -1,0 +1,203 @@
+---
+import Logo from './Logo.astro';
+import { istAktiv, url } from '../lib/url';
+
+const links = [
+  { ziel: 'aquarelle', text: 'Aquarelle' },
+  { ziel: 'ohrringe', text: 'Ohrringe' },
+  { ziel: 'ueber-mich', text: 'Über mich' },
+  { ziel: 'kauf-und-versand', text: 'Kauf & Versand' },
+  { ziel: 'kontakt', text: 'Kontakt' },
+];
+
+const pfad = Astro.url.pathname;
+---
+
+<header class="kopf">
+  <div class="container kopf__innen">
+    <a href={url('/')} class="kopf__logo" aria-label="Cremer-Laden – zur Startseite">
+      <Logo />
+    </a>
+
+    <button class="kopf__menue-knopf" type="button" popovertarget="hauptmenue">
+      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path d="M4 7h16M4 12h16M4 17h10"></path>
+      </svg>
+      Menü
+    </button>
+
+    <nav id="hauptmenue" class="nav" popover aria-label="Hauptnavigation">
+      <button class="nav__schliessen" type="button" popovertarget="hauptmenue" popovertargetaction="hide">
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <path d="M6 6l12 12M18 6L6 18"></path>
+        </svg>
+        <span class="visually-hidden">Menü schließen</span>
+      </button>
+      <ul class="nav__liste">
+        {
+          links.map((link) => (
+            <li>
+              <a href={url(link.ziel)} aria-current={istAktiv(pfad, link.ziel) ? 'page' : undefined}>
+                {link.text}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<style>
+  .kopf {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: color-mix(in srgb, var(--farbe-wand) 86%, transparent);
+    backdrop-filter: saturate(1.2) blur(12px);
+    -webkit-backdrop-filter: saturate(1.2) blur(12px);
+    border-bottom: 1px solid color-mix(in srgb, var(--farbe-linie) 70%, transparent);
+  }
+
+  .kopf__innen {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    min-height: 4.5rem;
+  }
+
+  .kopf__logo {
+    text-decoration: none;
+  }
+
+  .kopf__menue-knopf,
+  .nav__schliessen {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.5rem 0.8rem;
+    border: 0;
+    border-radius: 10px;
+    background: transparent;
+    color: var(--farbe-tinte);
+    font: inherit;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  .kopf__menue-knopf:hover,
+  .nav__schliessen:hover {
+    background: var(--farbe-linie);
+  }
+
+  .kopf__menue-knopf svg,
+  .nav__schliessen svg {
+    width: 1.4rem;
+    height: 1.4rem;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+  }
+
+  /* Mobil: Menü als Panel von oben */
+  .nav[popover] {
+    inset: 0 0 auto 0;
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    padding: 0.9rem var(--rand) 2.25rem;
+    border: 0;
+    border-radius: 0 0 20px 20px;
+    background: var(--farbe-wand);
+    color: var(--farbe-tinte);
+    box-shadow: 0 24px 48px rgb(43 40 51 / 0.14);
+  }
+
+  .nav[popover]::backdrop {
+    background: rgb(43 40 51 / 0.28);
+  }
+
+  .nav__schliessen {
+    display: flex;
+    margin-left: auto;
+  }
+
+  .nav__liste {
+    display: grid;
+    gap: 0.15rem;
+    margin: 0.5rem 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .nav__liste a {
+    display: block;
+    padding: 0.55rem 0;
+    font-family: var(--schrift-titel);
+    font-size: 1.65rem;
+    text-decoration: none;
+  }
+
+  .nav__liste a[aria-current='page'] {
+    color: var(--farbe-rot);
+  }
+
+  /* Desktop: Navigation dauerhaft sichtbar */
+  @media (min-width: 880px) {
+    .kopf__menue-knopf,
+    .nav__schliessen {
+      display: none;
+    }
+
+    .nav[popover] {
+      display: block;
+      position: static;
+      inset: auto;
+      width: auto;
+      overflow: visible;
+      padding: 0;
+      border-radius: 0;
+      background: none;
+      box-shadow: none;
+    }
+
+    .nav__liste {
+      display: flex;
+      gap: clamp(1.1rem, 2.2vw, 2.1rem);
+      margin: 0;
+    }
+
+    .nav__liste a {
+      position: relative;
+      padding: 0.35rem 0;
+      font-family: var(--schrift-text);
+      font-size: 0.98rem;
+      font-weight: 650;
+    }
+
+    .nav__liste a::after {
+      content: '';
+      position: absolute;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      height: 2px;
+      border-radius: 2px;
+      background: var(--farbe-rot);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.25s var(--kurve);
+    }
+
+    .nav__liste a:hover::after,
+    .nav__liste a[aria-current='page']::after {
+      transform: scaleX(1);
+    }
+
+    .nav__liste a[aria-current='page'] {
+      color: var(--farbe-tinte);
+    }
+  }
+</style>
